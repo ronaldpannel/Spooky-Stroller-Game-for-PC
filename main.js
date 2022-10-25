@@ -442,7 +442,7 @@ window.addEventListener("load", function () {
   }
   //game end / start conditions start
   function winCondition() {
-    if (scrollOffset > 3000) {
+    if (scrollOffset > 300) {
       keys.jump.pressed = false;
       keys.right.pressed = false;
       keys.left.pressed = false;
