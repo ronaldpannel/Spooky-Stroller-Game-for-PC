@@ -1,0 +1,83 @@
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: black;
+}
+.canvas1 {
+  /* background-color: blue; */
+  width: 1024;
+  height: 576;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: solid white 2px;
+  max-width: 100%;
+  max-height: 100%;
+}
+.bgImg {
+  display: none;
+}
+.playerImg {
+  display: none;
+}
+.snailEnemy {
+  display: none;
+}
+.startBtn {
+  font-size: 1rem;
+  border: 2px solid white;
+  border-radius: 25px;
+  color: white;
+  background-color: black;
+  display: none;
+  position: absolute;
+  z-index: 10;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 10px 40px;
+  cursor: pointer;
+}
+.startBtn:hover,
+.startBtn:focus {
+  background-color: white;
+  color: black;
+}
+.resetHScoreBtn {
+  font-size: 1rem;
+  border: 2px solid white;
+  border-radius: 25px;
+  color: white;
+  background-color: black;
+  display: none;
+  position: absolute;
+  z-index: 40;
+  top: 55%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 10px 40px;
+  cursor: pointer;
+}
+.resetHScoreBtn:hover,
+.resetHScoreBtn:focus {
+  background-color: white;
+  color: black;
+}
+.active {
+  display: block;
+  z-index: 20;
+}
+.nonActive {
+  display: none;
+}
+.loading {
+  font-size: 2rem;
+  position: absolute;
+  z-index: 40;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+   color: black;
+}
