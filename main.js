@@ -20,6 +20,7 @@ window.addEventListener("load", function () {
   const bangImg = document.getElementById("bangImg");
   const coinImg = document.getElementById("coin1.png");
   const winnerSound = document.getElementById("winnerSound");
+  const snailEatingSound = document.getElementById("snailEat");
 
   let gameSpeed = 0;
   let gameRate = 0;
@@ -35,6 +36,7 @@ window.addEventListener("load", function () {
   let enemySnails = [];
   let flyingEnemies = [];
   let particles = [];
+  let finishParticles = [];
   let dustParticles = [];
   let keys = {
     right: {
@@ -222,14 +224,6 @@ window.addEventListener("load", function () {
       ctx.fillStyle = this.color;
       ctx.arc(this.pos.x, this.pos.y, this.size, 0, Math.PI * 2);
       ctx.fill();
-
-      //  ctx.drawImage(
-      //     this.image,
-      //     this.pos.x,
-      //     this.pos.y,
-      //     this.size,
-      //     this.size
-      //   );
     }
     update() {
       this.pos.x += this.vel.x;
@@ -238,13 +232,43 @@ window.addEventListener("load", function () {
     }
   }
   function handleCoins() {
-    for (let i = 0; i <= 2; i++) {
+    for (let i = 0; i <= 6; i++) {
       coins.push(new Coin());
     }
   }
 
   //finish coin end
   //particle classes start
+
+  class FinishParticle {
+    constructor() {
+      this.x = staticObject.pos.x + staticObject.width / 2;
+      this.y = staticObject.pos.y;
+      this.color = "hsla(" + hue + ", 50%, 50%, " + opacity + ")";
+      this.size = Math.random() * 5 + 5;
+      this.velX = Math.random() * 10 + -5;
+      this.velY = Math.random() + 5 + 5;
+      this.gravity = -0.4;
+    }
+    update() {
+      this.x += this.velX;
+      this.velY += this.gravity;
+      this.y -= this.velY;
+    }
+    show() {
+      ctx.fillStyle = this.color;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.closePath();
+    }
+  }
+
+  function handleFinishParticles() {
+    for (let i = 0; i <= 1; i++) {
+      finishParticles.push(new FinishParticle());
+    }
+  }
 
   class Particle {
     constructor() {
@@ -366,6 +390,7 @@ window.addEventListener("load", function () {
       ) {
         ctx.drawImage(bangImg, player.pos.x + 80, player.pos.y, 80, 80);
         enemySnails[i].pos.x = player.pos.x + player.width;
+        snailEatingSound.play();
         loseCondition();
       }
     }
@@ -490,6 +515,7 @@ window.addEventListener("load", function () {
     playerSnailEnemyCollision();
     playerFlyingEnemyCollision();
     handleFlyingEnemies();
+    handleFinishParticles();
 
     scores();
     highScoreBoard();
@@ -509,6 +535,14 @@ window.addEventListener("load", function () {
       particles[i].show();
       if (particles.length > 10) {
         particles.splice(i, 1);
+      }
+    }
+
+    for (let i = 0; i < finishParticles.length; i++) {
+      finishParticles[i].update();
+      finishParticles[i].show();
+      if (finishParticles.length > 100) {
+        finishParticles.splice(i, 1);
       }
     }
 
@@ -533,6 +567,16 @@ window.addEventListener("load", function () {
     playerMove();
     gameRate++;
     hue++;
+
+     ctx.font = "25px Aerial";
+     ctx.fillStyle = "black";
+     ctx.fillText(
+       'Press A to Jump, Right Arrow to Run',
+       canvas.width / 2 - 230,
+       50
+     );
+
+      
   }
 
   animate();
@@ -549,6 +593,7 @@ window.addEventListener("load", function () {
   function winCondition() {
     if (player.pos.x + player.width >= staticObject.pos.x) {
       winnerSound.play();
+      score += 100;
       keys.jump.pressed = false;
       keys.right.pressed = false;
       keys.left.pressed = false;
