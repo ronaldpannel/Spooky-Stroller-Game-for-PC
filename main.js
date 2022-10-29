@@ -1,7 +1,7 @@
 window.addEventListener("load", function () {
-  const loading = this.document.getElementById('loading')
-  loading.style.display = 'none'
-  
+  const loading = this.document.getElementById("loading");
+  loading.style.display = "none";
+
   const canvas = document.getElementById("canvas1");
   const ctx = canvas.getContext("2d");
   canvas.width = 1024;
@@ -15,7 +15,11 @@ window.addEventListener("load", function () {
   const layerImg5 = document.getElementById("layerImg5");
   const playerImg = document.getElementById("playerImg");
   const snailEnemyIng = document.getElementById("snailEnemy");
+  const chestOfGoldImg = this.document.getElementById("chest");
   const flyingEnemyImg = document.getElementById("flyingEnemy");
+  const bangImg = document.getElementById("bangImg");
+  const coinImg = document.getElementById("coin1.png");
+  const winnerSound = document.getElementById("winnerSound");
 
   let gameSpeed = 0;
   let gameRate = 0;
@@ -24,8 +28,9 @@ window.addEventListener("load", function () {
   let gravity = 0;
   let score = 0;
   let highScore = localStorage.getItem("spookyStrollerScore") || 0;
-  let scrollOffset = 0;
 
+  let coins = [];
+  let staticObject;
   let player;
   let enemySnails = [];
   let flyingEnemies = [];
@@ -45,10 +50,10 @@ window.addEventListener("load", function () {
 
   //background start
   class BackGround {
-    constructor(image, speedModify) {
+    constructor(x, y, image, speedModify) {
       this.pos = {
-        x: 0,
-        y: 0,
+        x: x,
+        y: y,
       };
       this.image = image;
       this.width = 2400;
@@ -81,13 +86,50 @@ window.addEventListener("load", function () {
       );
     }
   }
-  const bgImg1 = new BackGround(layerImg1, 0.2);
-  const bgImg2 = new BackGround(layerImg2, 0.4);
-  const bgImg3 = new BackGround(layerImg3, 0.6);
-  const bgImg4 = new BackGround(layerImg4, 0.8);
-  const bgImg5 = new BackGround(layerImg5, 1);
+  const bgImg1 = new BackGround(0, 0, layerImg1, 0.2);
+  const bgImg2 = new BackGround(0, 0, layerImg2, 0.4);
+  const bgImg3 = new BackGround(0, 0, layerImg3, 0.6);
+  const bgImg4 = new BackGround(0, 0, layerImg4, 0.8);
+  const bgImg5 = new BackGround(0, 0, layerImg5, 1);
 
   let bgImgs = [bgImg1, bgImg2, bgImg3, bgImg4, bgImg5];
+
+  //game static objects start
+  class StaticObject {
+    constructor(image, x, y) {
+      this.pos = {
+        x: x,
+        y: y,
+      };
+      this.vel = {
+        x: 0,
+        y: 0,
+      };
+      this.gravity = 0.7;
+      this.width = 100;
+      this.height = 90;
+      this.color = "white";
+      this.image = image;
+    }
+    update() {
+      if (keys.right.pressed) {
+        this.pos.x -= gameSpeed;
+      } else {
+      }
+    }
+    draw() {
+      ctx.fillStyle = this.color;
+      //ctx.fillRect(this.pos.x, this.pos.y, this.width, this.height);
+      ctx.drawImage(
+        this.image,
+        this.pos.x,
+        this.pos.y,
+        this.width,
+        this.height
+      );
+    }
+  }
+  staticObject = new StaticObject(chestOfGoldImg, 6000, canvas.height - 180);
 
   //background end
 
@@ -120,7 +162,7 @@ window.addEventListener("load", function () {
       //this.pos.x += this.vel.x;
       this.frameRate++;
 
-      if (this.frameRate % 10 == 0) {
+      if (this.frameRate % 5 == 0) {
         if (this.frameX >= this.maxFrames) {
           this.frameX = 0;
         }
@@ -157,6 +199,51 @@ window.addEventListener("load", function () {
   player = new Player();
 
   //player end
+
+  //finish coin start
+
+  class Coin {
+    constructor() {
+      this.pos = {
+        x: player.pos.x,
+        y: player.pos.y,
+      };
+      this.vel = {
+        x: Math.random() * 5 + -5,
+        y: Math.random() * 5 + 5,
+      };
+      this.gravity = -0.5;
+      this.size = 10;
+      this.color = "orange";
+      this.image = coinImg;
+    }
+    draw() {
+      ctx.beginPath();
+      ctx.fillStyle = this.color;
+      ctx.arc(this.pos.x, this.pos.y, this.size, 0, Math.PI * 2);
+      ctx.fill();
+
+      //  ctx.drawImage(
+      //     this.image,
+      //     this.pos.x,
+      //     this.pos.y,
+      //     this.size,
+      //     this.size
+      //   );
+    }
+    update() {
+      this.pos.x += this.vel.x;
+      this.vel.y += this.gravity;
+      this.pos.y -= this.vel.y;
+    }
+  }
+  function handleCoins() {
+    for (let i = 0; i <= 2; i++) {
+      coins.push(new Coin());
+    }
+  }
+
+  //finish coin end
   //particle classes start
 
   class Particle {
@@ -164,7 +251,7 @@ window.addEventListener("load", function () {
       this.x = player.pos.x;
       this.y = player.pos.y + 50;
       this.color = "hsla(" + hue + ", 50%, 50%, " + opacity + ")";
-      this.size = Math.random() * 20 + 10;
+      this.size = Math.random() * 5 + 5;
       this.spreadY = Math.random() * 5.75 + -5.75;
       this.spreadX = Math.random() * 5.75 + -5.75;
     }
@@ -269,7 +356,6 @@ window.addEventListener("load", function () {
     if (gameRate % inter == 0) {
       enemySnails.push(new SnailEnemy());
     }
-    console.log(enemySnails.length);
   }
   function playerSnailEnemyCollision() {
     for (let i = 0; i < enemySnails.length; i++) {
@@ -278,6 +364,7 @@ window.addEventListener("load", function () {
         player.pos.x <= enemySnails[i].pos.x + enemySnails[i].width &&
         player.pos.y + player.height >= enemySnails[i].pos.y
       ) {
+        ctx.drawImage(bangImg, player.pos.x + 80, player.pos.y, 80, 80);
         enemySnails[i].pos.x = player.pos.x + player.width;
         loseCondition();
       }
@@ -293,6 +380,7 @@ window.addEventListener("load", function () {
         player.pos.x <= flyingEnemies[i].pos.x + flyingEnemies[i].width
       ) {
         score += 10;
+        handleCoins();
         flyingEnemies.splice(i, 1);
         console.log(score);
       }
@@ -324,7 +412,12 @@ window.addEventListener("load", function () {
       this.frameY = 0;
     }
     update() {
-      this.pos.x -= this.vel.x;
+      if (keys.right.pressed) {
+        this.pos.x -= this.vel.x * 2;
+      } else {
+        this.pos.x -= this.vel.x;
+      }
+
       this.pos.y += Math.sin(this.angle) * 3;
       this.frameX++;
       this.frameRate++;
@@ -361,7 +454,7 @@ window.addEventListener("load", function () {
     }
   }
   function handleFlyingEnemies() {
-    if (gameRate % 100 == 0) {
+    if (gameRate % 50 == 0 && keys.right.pressed) {
       flyingEnemies.push(new FlyingEnemy());
     }
   }
@@ -376,6 +469,8 @@ window.addEventListener("load", function () {
       object.draw();
       object.update();
     });
+    staticObject.draw();
+    staticObject.update();
 
     enemySnails.forEach((snailEnemy) => {
       snailEnemy.draw();
@@ -395,10 +490,10 @@ window.addEventListener("load", function () {
     playerSnailEnemyCollision();
     playerFlyingEnemyCollision();
     handleFlyingEnemies();
+
     scores();
     highScoreBoard();
     winCondition();
-
 
     if (keys.jump.pressed) {
       handleParticles();
@@ -409,7 +504,6 @@ window.addEventListener("load", function () {
     if (keys.right.pressed && keys.jump.pressed) {
       gameSpeed += 5;
     }
-
     for (let i = 0; i < particles.length; i++) {
       particles[i].update();
       particles[i].show();
@@ -425,28 +519,40 @@ window.addEventListener("load", function () {
         dustParticles.splice(i, 1);
       }
     }
+
+    for (let i = 0; i < coins.length; i++) {
+      coins[i].draw();
+      coins[i].update();
+    }
+
+    for (let i = 0; i < coins.length; i++) {
+      if (coins[i].pos.y >= canvas.height - 100) {
+        coins.splice(i, 1);
+      }
+    }
     playerMove();
     gameRate++;
     hue++;
   }
 
   animate();
+
   function playerMove() {
-    if (keys.right.pressed || keys.jump.pressed) {
+    if (keys.right.pressed) {
       gameSpeed = 5;
       scrollOffset = bgImg1.pos.x * -1;
     } else {
       gameSpeed = 0;
     }
-    console.log(scrollOffset);
   }
   //game end / start conditions start
   function winCondition() {
-    if (scrollOffset > 300) {
+    if (player.pos.x + player.width >= staticObject.pos.x) {
+      winnerSound.play();
       keys.jump.pressed = false;
       keys.right.pressed = false;
       keys.left.pressed = false;
-      highestScore()
+      highestScore();
       ctx.font = "55px Aerial";
       ctx.fillStyle = "black";
       ctx.fillText(
@@ -454,6 +560,7 @@ window.addEventListener("load", function () {
         canvas.width / 2 - 250,
         100
       );
+
       startBtn.style.display = "block";
       bestScoreResetBtn.style.display = "block";
       cancelAnimationFrame(animationId);
@@ -468,7 +575,7 @@ window.addEventListener("load", function () {
       150
     );
     startBtn.style.display = "block";
-    bestScoreResetBtn.style.display = 'block'
+    bestScoreResetBtn.style.display = "block";
     cancelAnimationFrame(animationId);
     keys.jump.pressed = false;
     keys.right.pressed = false;
@@ -483,7 +590,7 @@ window.addEventListener("load", function () {
     ctx.fillStyle = "black";
     ctx.fillText("score = " + score, 50, 50);
   }
-  function highScoreBoard(){
+  function highScoreBoard() {
     ctx.font = "25px Aerial";
     ctx.fillStyle = "black";
     ctx.fillText("Best Score = " + highScore, 800, 50);
@@ -501,7 +608,7 @@ window.addEventListener("load", function () {
   });
 
   bestScoreResetBtn.addEventListener("click", (e) => {
-     localStorage.setItem("spookyStrollerScore", 0);
+    localStorage.setItem("spookyStrollerScore", 0);
     startBtn.style.display = "none";
     location.reload();
   });

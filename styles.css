@@ -25,6 +25,12 @@ body {
 .snailEnemy {
   display: none;
 }
+.bangImg{
+  display: none;
+}
+.chest{
+  display: none;
+}
 .startBtn {
   font-size: 1rem;
   border: 2px solid white;
@@ -72,10 +78,13 @@ body {
 .nonActive {
   display: none;
 }
+.coin1{
+  display: none;
+}
 .loading {
   font-size: 2rem;
   position: absolute;
-  z-index: 40;
+  z-index: 100;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
