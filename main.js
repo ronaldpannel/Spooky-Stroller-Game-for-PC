@@ -21,6 +21,7 @@ window.addEventListener("load", function () {
   const coinImg = document.getElementById("coin1.png");
   const winnerSound = document.getElementById("winnerSound");
   const snailEatingSound = document.getElementById("snailEat");
+  const whistleSound = document.getElementById("whistle");
 
   let gameSpeed = 0;
   let gameRate = 0;
@@ -131,7 +132,7 @@ window.addEventListener("load", function () {
       );
     }
   }
-  staticObject = new StaticObject(chestOfGoldImg, 6000, canvas.height - 180);
+  staticObject = new StaticObject(chestOfGoldImg, 10000, canvas.height - 180);
 
   //background end
 
@@ -405,9 +406,11 @@ window.addEventListener("load", function () {
         player.pos.x <= flyingEnemies[i].pos.x + flyingEnemies[i].width
       ) {
         score += 10;
+        whistleSound.pause()
+        whistleSound.currentTime = 0
+        whistleSound.play()
         handleCoins();
         flyingEnemies.splice(i, 1);
-        console.log(score);
       }
     }
   }
