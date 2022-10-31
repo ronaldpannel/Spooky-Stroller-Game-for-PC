@@ -391,6 +391,8 @@ window.addEventListener("load", function () {
       ) {
         ctx.drawImage(bangImg, player.pos.x + 80, player.pos.y, 80, 80);
         enemySnails[i].pos.x = player.pos.x + player.width;
+        snailEatingSound.pause();
+        snailEatingSound.currentTime = 0;
         snailEatingSound.play();
         loseCondition();
       }
@@ -406,9 +408,9 @@ window.addEventListener("load", function () {
         player.pos.x <= flyingEnemies[i].pos.x + flyingEnemies[i].width
       ) {
         score += 10;
-        whistleSound.pause()
-        whistleSound.currentTime = 0
-        whistleSound.play()
+        whistleSound.pause();
+        whistleSound.currentTime = 0;
+        whistleSound.play();
         handleCoins();
         flyingEnemies.splice(i, 1);
       }
@@ -571,15 +573,13 @@ window.addEventListener("load", function () {
     gameRate++;
     hue++;
 
-     ctx.font = "25px Aerial";
-     ctx.fillStyle = "black";
-     ctx.fillText(
-       'Press A to Jump, Right Arrow to Run',
-       canvas.width / 2 - 230,
-       50
-     );
-
-      
+    ctx.font = "25px Aerial";
+    ctx.fillStyle = "black";
+    ctx.fillText(
+      "Press A to Jump, Right Arrow to Run",
+      canvas.width / 2 - 230,
+      50
+    );
   }
 
   animate();
@@ -595,6 +595,8 @@ window.addEventListener("load", function () {
   //game end / start conditions start
   function winCondition() {
     if (player.pos.x + player.width >= staticObject.pos.x) {
+      winnerSound.pause();
+      winnerSound.currentTime = 0;
       winnerSound.play();
       score += 100;
       keys.jump.pressed = false;
